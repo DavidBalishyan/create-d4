@@ -1,0 +1,31 @@
+{
+  "name": "my-tool",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "bin": {
+  "my-tool": "dist/index.js"
+},
+"scripts": {
+  "build": "tsc",
+  "dev": "ts-node src/index.ts",
+  "start": "pnpm run build && pnpm my-tool"
+},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^5.4.1",
+    "commander": "^13.1.0",
+    "fs-extra": "^11.3.0",
+    "prompts": "^2.4.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "@types/prompts": "^2.4.9",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.2"
+  },
+  "type": "module"
+
+}
