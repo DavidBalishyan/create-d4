@@ -15,6 +15,15 @@ const createProject = async () => {
       initial: "my-app",
     },
     {
+      type: "select",
+      name: "bundler",
+      message: "Choose a bundler:",
+      choices: [
+        { title: "Vite", value: "vite" },
+        { title: "Rsbuild", value: "rsbuild" },
+      ],
+    },
+    {
       type: "toggle",
       name: "typescript",
       message: "Use TypeScript?",
@@ -27,7 +36,7 @@ const createProject = async () => {
       name: "cssFramework",
       message: "Choose a CSS framework:",
       choices: [
-        { title: "Tailwind CSS v4", value: "tailwind" },
+        { title: "Tailwind CSS v4(does not support rsbuild)", value: "tailwind" },
         { title: "UnoCSS", value: "unocss" },
         { title: "Bootstrap", value: "bootstrap" },
       ],
@@ -62,12 +71,19 @@ const createProject = async () => {
     },    
   ]);
 
-  const { name, typescript, cssFramework, preprocessor, git, state} = response;
+  const { name, bundler, typescript, cssFramework, preprocessor, git, state } = response;
   const template = typescript ? "react-ts" : "react";
   const targetDir = path.resolve(process.cwd(), name);
 
-  console.log(chalk.green(`\nCreating Vite project with template "${template}"...`));
-  execSync(`pnpm create vite ${name} --template ${template}`, { stdio: "inherit" });
+  
+  if (bundler === "vite") {
+    console.log(chalk.green(`\nCreating Vite project with template "${template}"...`));
+    execSync(`pnpm create vite ${name} --template ${template}`, { stdio: "inherit" });
+  } else {
+    console.log(chalk.green(`\nCreating Rsbuild project with template "${template}"...`));
+    execSync(`pnpm create rsbuild --dir ${name} --template ${template}`, { stdio: "inherit" });
+  }
+  
 
   process.chdir(targetDir);
 
