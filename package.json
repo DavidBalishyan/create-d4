@@ -4,13 +4,13 @@
   "description": "",
   "main": "index.js",
   "bin": {
-  "my-tool": "dist/index.js"
-},
-"scripts": {
-  "build": "tsc",
-  "dev": "ts-node src/index.ts",
-  "start": "pnpm run build && pnpm unlink --global && pnpm link --global && pnpm my-tool"
-},
+    "my-tool": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node src/index.ts",
+    "start": "pnpm run build && pnpm unlink --global && pnpm link --global && pnpm my-tool"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -18,14 +18,16 @@
     "chalk": "^5.4.1",
     "commander": "^13.1.0",
     "fs-extra": "^11.3.0",
+    "minimist": "^1.2.8",
     "prompts": "^2.4.2"
   },
   "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/minimist": "^1.2.5",
     "@types/node": "^22.14.0",
     "@types/prompts": "^2.4.9",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.2"
   },
   "type": "module"
-
 }

@@ -5,6 +5,7 @@ import prompts from "prompts";
 import fs from "fs-extra";
 import path from "path";
 import chalk from "chalk";
+import _minimist from "minimist";
 
 const createProject = async () => {
   const response = await prompts([
@@ -38,6 +39,7 @@ const createProject = async () => {
       choices: [
         { title: "Tailwind CSS v4(does not support rsbuild)", value: "tailwind" },
         { title: "UnoCSS", value: "unocss" },
+        { title: "bulma", value: "bulma" },
         { title: "Bootstrap", value: "bootstrap" },
       ],
     },
@@ -176,11 +178,18 @@ export const useStore = () => useContext(StoreContext);
       fs.writeFileSync(viteConfigPath, updatedConfig);
       break;
 
+      case "bulma":
+        console.log(chalk.green("Setting up Bulma CSS..."));
+        execSync(`pnpm install bulma`, { stdio: "inherit" });
+        fs.appendFileSync("src/index.css", `\n@import "../node_modules/bulma/css/bulma.css";`);
+        break;
+
     case "bootstrap":
       console.log(chalk.green("Setting up Bootstrap CSS..."));
       execSync(`pnpm install bootstrap`, { stdio: "inherit" });
       fs.appendFileSync("src/index.css", `\n@import "bootstrap/dist/css/bootstrap.min.css";`);
       break;
+      
   }
 
   // CSS Preprocessor Setup
