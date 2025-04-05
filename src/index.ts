@@ -1,117 +1,196 @@
 #!/usr/bin/env node
-
-import { execSync } from "child_process";
+//@ts-ignore
+import { exec, execSync } from "child_process";
+import prompts from "prompts";
 import fs from "fs-extra";
 import path from "path";
-import prompts from "prompts";
 import chalk from "chalk";
 
-async function createProject() {
-  const response = await prompts({
-    type: "text",
-    name: "name",
-    message: "Enter project name:",
-    initial: "my-react-app",
-  });
+const createProject = async () => {
+  const response = await prompts([
+    {
+      type: "text",
+      name: "name",
+      message: "Enter project name:",
+      initial: "my-app",
+    },
+    {
+      type: "toggle",
+      name: "typescript",
+      message: "Use TypeScript?",
+      initial: true,
+      active: "Yes",
+      inactive: "No",
+    },
+    {
+      type: "select",
+      name: "cssFramework",
+      message: "Choose a CSS framework:",
+      choices: [
+        { title: "Tailwind CSS v4", value: "tailwind" },
+        { title: "UnoCSS", value: "unocss" },
+        { title: "Bootstrap", value: "bootstrap" },
+      ],
+    },
+    {
+      type: "select",
+      name: "preprocessor",
+      message: "Choose a CSS preprocessor:",
+      choices: [
+        { title: "Sass", value: "sass" },
+        { title: "Less", value: "less" },
+        { title: "None", value: "none" },
+      ],
+    },
+    {
+      type: "toggle",
+      name: "git",
+      message: "Initialize a git repository?",
+      initial: true,
+      active: "Yes",
+      inactive: "No",
+    },
+    {
+      type: "select",
+      name: "state",
+      message: "Choose a state management library:",
+      choices: [
+        { title: "Redux", value: "redux" },
+        { title: "MobX", value: "mobx" },
+        { title: "None", value: "none" },
+      ],
+    },    
+  ]);
 
+  const { name, typescript, cssFramework, preprocessor, git, state} = response;
+  const template = typescript ? "react-ts" : "react";
+  const targetDir = path.resolve(process.cwd(), name);
 
-  const projectName = response.name;
-  const targetDir = path.resolve(process.cwd(), projectName);
+  console.log(chalk.green(`\nCreating Vite project with template "${template}"...`));
+  execSync(`pnpm create vite ${name} --template ${template}`, { stdio: "inherit" });
 
-  console.log(chalk.green(`\nCreating React project with Vite...`));
-
-  // Run create-vite
-  execSync(`pnpm create vite ${projectName} --template react-ts`, {
-    stdio: "inherit", 
-  });
-
-  // Navigate to project folder
   process.chdir(targetDir);
 
-  console.log(chalk.blue("\nInstalling dependencies...\n"));
-
-  // Install dependencies
+  console.log(chalk.blue(`\nInstalling dependencies...\n`));
   execSync(`pnpm install`, { stdio: "inherit" });
-  execSync(`pnpm install tailwindcss @tailwindcss/vite react-router-dom`, {
-    stdio: "inherit",
-  });
 
-  fs.writeFileSync("src/index.css", `@import "tailwindcss";`);
-  fs.writeFileSync(
-    "src/assets/tailwind.svg",
-    `<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" fill="none" viewBox="0 0 256 256"><rect width="256" height="256" fill="#242938" rx="60"/><path fill="url(#paint0_linear_2_119)" fill-rule="evenodd" d="M83 110C88.9991 86.0009 104.001 74 128 74C164 74 168.5 101 186.5 105.5C198.501 108.501 209 104.001 218 92C212.001 115.999 196.999 128 173 128C137 128 132.5 101 114.5 96.5C102.499 93.4991 92 97.9991 83 110ZM38 164C43.9991 140.001 59.0009 128 83 128C119 128 123.5 155 141.5 159.5C153.501 162.501 164 158.001 173 146C167.001 169.999 151.999 182 128 182C92 182 87.5 155 69.5 150.5C57.4991 147.499 47 151.999 38 164Z" clip-rule="evenodd"/><defs><linearGradient id="paint0_linear_2_119" x1="86.5" x2="163.5" y1="74" y2="185.5" gradientUnits="userSpaceOnUse"><stop stop-color="#32B1C1"/><stop offset="1" stop-color="#14C6B7"/></linearGradient></defs></svg>`
-  );
-  fs.writeFileSync(
-    "README.md",
-    `
-    # React + Vite + TS + tailwindcss v4
-    This app includes:
-    - React
-    - Vite
-    - TypeScript
-    - TailwindCSS v4
-    - Eslint
-    - React Router
-    # How do I deploy this app
-     - You can deploy this app using services like vercel, netlify, aws, etc.
-     - You can also make this app open-source using github, gitlab or Bitbucket
-    # How do I run this app
-     - For using it in development mode, run
-        "pnpm run dev"
-     - For production build run
-        "pnpm run build"
-    # Name of the project is ${projectName}
-     `
-)
+  // State Management Setup
+  switch (state) {
+    case "redux":
+      console.log(chalk.green("Installing Redux..."));
+      execSync(`pnpm install @reduxjs/toolkit react-redux`, { stdio: "inherit" });
 
-  // Add React Router setup
-  fs.writeFileSync(
-    "src/App.jsx",
-    `import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import tailwindlogo from './assets/tailwind.svg'
-import './App.css'
+      fs.writeFileSync(
+        "src/store.js",
+        `import { configureStore } from '@reduxjs/toolkit';
 
-function App() {
-  const [count, setCount] = useState(0)
+        export const store = configureStore({
+        reducer: {},
+          }); 
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-        <a href="https://tailwindcss.com" target="_blank">
-          <img src={tailwindlogo} className="logo" alt="tailwindcss logo" />
-        </a>
-      </div>
-      <h1>Vite + React + tailwindcss v4</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p> 
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+// Example usage:
+// import { Provider } from 'react-redux';
+// <Provider store={store}>...</Provider>`
+      );
+      break;
+
+    case "mobx":
+      console.log(chalk.green("Installing MobX..."));
+      execSync(`pnpm install mobx mobx-react-lite`, { stdio: "inherit" });
+
+      fs.writeFileSync(
+        "src/store.js",
+        `import { makeAutoObservable } from "mobx";
+import { createContext, useContext } from "react";
+
+class AppStore {
+  count = 0;
+
+  constructor() {
+    makeAutoObservable(this);
+  }
+
+  increment() {
+    this.count++;
+  }
 }
 
-export default App
-`);
+const StoreContext = createContext(new AppStore());
 
-  console.log(chalk.green("\nSetup complete! 🎉\n"));
-  console.log(chalk.yellow(`\nRun these commands to start:\n`));
-  console.log(chalk.cyan(`cd ${projectName}`));
+export const useStore = () => useContext(StoreContext);
+
+// Example usage:
+// const { count, increment } = useStore();`
+      );
+      break;
+  }
+
+
+  // CSS Framework Setup
+  switch (cssFramework) {
+    case "tailwind":
+      console.log(chalk.green("Setting up Tailwind CSS v4..."));
+      execSync(`pnpm install tailwindcss @tailwindcss/vite`, { stdio: "inherit" });
+
+      fs.writeFileSync(
+        "src/index.css",
+        `@import "tailwindcss";`
+      );
+      break;
+
+    case "unocss":
+      console.log(chalk.green("Setting up UnoCSS..."));
+      execSync(`pnpm install -D unocss`, { stdio: "inherit" });
+
+      fs.writeFileSync(
+        "uno.config.js",
+        `import { defineConfig, presetUno } from 'unocss';
+
+          export default defineConfig({
+            presets: [presetUno()],
+        });`
+      );
+
+      const viteConfigPath = typescript ? "vite.config.ts" : "vite.config.js";
+      const viteConfig = fs.readFileSync(viteConfigPath, "utf-8");
+      const updatedConfig = viteConfig.replace(
+        /plugins:\s*\[/,
+        `plugins: [\n    require('unocss/vite').default(),`
+      );
+      fs.writeFileSync(viteConfigPath, updatedConfig);
+      break;
+
+    case "bootstrap":
+      console.log(chalk.green("Setting up Bootstrap CSS..."));
+      execSync(`pnpm install bootstrap`, { stdio: "inherit" });
+      fs.appendFileSync("src/index.css", `\n@import "bootstrap/dist/css/bootstrap.min.css";`);
+      break;
+  }
+
+  // CSS Preprocessor Setup
+  switch (preprocessor) {
+    case "sass":
+      console.log(chalk.green("Installing Sass..."));
+      execSync(`pnpm install -D sass`, { stdio: "inherit" });
+      break;
+    case "less":
+      console.log(chalk.green("Installing Less..."));
+      execSync(`pnpm install -D less`, { stdio: "inherit" });
+      break;
+  }
+
+  // Git Initialization
+  if (git) {
+    console.log(chalk.green("\nInitializing git repository..."));
+    execSync("git init", { stdio: "inherit" });
+  }
+  
+  console.log(chalk.green(`\nAll done! 🚀`));
+  console.log(chalk.yellow(`\nNext steps:`));
+  console.log(chalk.cyan(`cd ${name}`));
   console.log(chalk.cyan(`pnpm run dev`));
 }
+
+
 
 createProject();

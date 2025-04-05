@@ -9,7 +9,7 @@
 "scripts": {
   "build": "tsc",
   "dev": "ts-node src/index.ts",
-  "start": "pnpm run build && pnpm my-tool"
+  "start": "pnpm run build && pnpm unlink --global && pnpm link --global && pnpm my-tool"
 },
   "keywords": [],
   "author": "",
