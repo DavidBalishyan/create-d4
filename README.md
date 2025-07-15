@@ -23,9 +23,10 @@ A modern scaffolding CLI to kickstart React projects with **Vite** or **Rsbuild*
 
 ---
 
-## 📦 Getting Started
+# 📦 Getting Started
+To get started with create-d4, follow these steps below
 
 ```bash
-pnpm create modern-react@latest
+pnpm create@latest
 ```
-You can also use it with tools lik **npm** or **yarn**
+You can also use it with tools like **npm** or **yarn**
