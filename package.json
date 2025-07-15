@@ -4,10 +4,12 @@
   "description": "",
   "main": "index.js",
   "bin": {
-    "my-tool": "dist/index.js"
+    "create-d4": "dist/index.js"
   },
   "scripts": {
     "build": "tsc",
+    "link": "pnpm link --global",
+    "unlink": "pnpm unlink --global",
     "dev": "ts-node src/index.ts",
     "start": "pnpm run build && pnpm unlink --global && pnpm link --global && pnpm my-tool"
   },

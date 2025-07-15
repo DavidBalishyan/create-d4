@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-//@ts-ignore
+// @ts-ignore
 import { exec, execSync } from "child_process";
 import prompts from "prompts";
 import fs from "fs-extra";
@@ -7,7 +7,8 @@ import path from "path";
 import chalk from "chalk";
 import _minimist from "minimist";
 
-const createProject = async () => {
+// Main setup of the project
+const createProject: Function = async () => {
   const response = await prompts([
     {
       type: "text",
@@ -70,14 +71,14 @@ const createProject = async () => {
         { title: "MobX", value: "mobx" },
         { title: "None", value: "none" },
       ],
-    },    
+    },
   ]);
 
   const { name, bundler, typescript, cssFramework, preprocessor, git, state } = response;
-  const template = typescript ? "react-ts" : "react";
-  const targetDir = path.resolve(process.cwd(), name);
+  const template: string = typescript ? "react-ts" : "react";
+  const targetDir: string = path.resolve(process.cwd(), name);
 
-  
+
   if (bundler === "vite") {
     console.log(chalk.green(`\nCreating Vite project with template "${template}"...`));
     execSync(`pnpm create vite ${name} --template ${template}`, { stdio: "inherit" });
@@ -85,7 +86,7 @@ const createProject = async () => {
     console.log(chalk.green(`\nCreating Rsbuild project with template "${template}"...`));
     execSync(`pnpm create rsbuild --dir ${name} --template ${template}`, { stdio: "inherit" });
   }
-  
+
 
   process.chdir(targetDir);
 
@@ -178,18 +179,18 @@ export const useStore = () => useContext(StoreContext);
       fs.writeFileSync(viteConfigPath, updatedConfig);
       break;
 
-      case "bulma":
-        console.log(chalk.green("Setting up Bulma CSS..."));
-        execSync(`pnpm install bulma`, { stdio: "inherit" });
-        fs.appendFileSync("src/index.css", `\n@import "../node_modules/bulma/css/bulma.css";`);
-        break;
+    case "bulma":
+      console.log(chalk.green("Setting up Bulma CSS..."));
+      execSync(`pnpm install bulma`, { stdio: "inherit" });
+      fs.appendFileSync("src/index.css", `\n@import "../node_modules/bulma/css/bulma.css";`);
+      break;
 
     case "bootstrap":
       console.log(chalk.green("Setting up Bootstrap CSS..."));
       execSync(`pnpm install bootstrap`, { stdio: "inherit" });
       fs.appendFileSync("src/index.css", `\n@import "bootstrap/dist/css/bootstrap.min.css";`);
       break;
-      
+
   }
 
   // CSS Preprocessor Setup
@@ -209,8 +210,8 @@ export const useStore = () => useContext(StoreContext);
     console.log(chalk.green("\nInitializing git repository..."));
     execSync("git init", { stdio: "inherit" });
   }
-  
-  console.log(chalk.green(`\nAll done! 🚀`));
+
+  console.log(chalk.green(`\nAll done!`));
   console.log(chalk.yellow(`\nNext steps:`));
   console.log(chalk.cyan(`cd ${name}`));
   console.log(chalk.cyan(`pnpm run dev`));
