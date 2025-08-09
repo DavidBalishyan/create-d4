@@ -1,5 +1,7 @@
-# Exclude all files by default from language detection
-* linguist-detectable=false
+*.ts linguist-language=TypeScript
+*.tsx linguist-language=TypeScript
+*.js linguist-detectable=false
 
-# Include all files inside the src folder for language detection
+# Detect languages only in src folder
+* linguist-detectable=false
 src/** linguist-detectable=true
