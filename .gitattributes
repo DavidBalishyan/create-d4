@@ -1,0 +1,5 @@
+# Exclude all files by default from language detection
+* linguist-detectable=false
+
+# Include all files inside the src folder for language detection
+src/** linguist-detectable=true
